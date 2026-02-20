@@ -4,7 +4,7 @@ export async function proxy(request: NextRequest) {
   let accessToken = request.cookies.get("r3sonance_token");
   const baseurl =
     process.env.NODE_ENV == "production"
-      ? "https://r3sonance.pxxl.click/api/v1"
+      ? "https://r3sonance-backend.pxxl.click/api/v1"
       : "http://127.0.0.1:8080/api/v1";
 
   if (!accessToken) {
