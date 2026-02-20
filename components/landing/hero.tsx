@@ -1,9 +1,10 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
+import { motion } from "framer-motion";
 import { FaSpotify } from "react-icons/fa6";
-import Link from "next/link"
-import { GlowButton } from "@/components/glow-button"
+import Link from "next/link";
+import { GlowButton } from "@/components/glow-button";
+import { BASE_URL } from "@/lib/types";
 
 export function Hero() {
   return (
@@ -59,7 +60,7 @@ export function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9 }}
         >
-          <Link href="/dashboard">
+          <Link href={`${BASE_URL()}/users/spotify/login`}>
             <GlowButton className="mt-4 gap-2 px-8 py-3.5 text-base">
               <FaSpotify className="h-5 w-5" />
               Login with Spotify
@@ -68,5 +69,5 @@ export function Hero() {
         </motion.div>
       </motion.div>
     </section>
-  )
+  );
 }

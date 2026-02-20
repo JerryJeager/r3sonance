@@ -1,3 +1,13 @@
+export const BASE_URL = () => {
+  const environment = process.env.NODE_ENV;
+  // console.log(environment)
+  const baseUrl =
+    environment === "production"
+      ? "https://r3sonance.pxxl.click/api/v1"
+      : "http://127.0.0.1:8080/api/v1";
+  return baseUrl;
+};
+
 export type Artist = {
   id: string
   name: string

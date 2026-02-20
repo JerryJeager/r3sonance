@@ -32,9 +32,9 @@ export function ProfileCard({ user }: ProfileCardProps) {
         <div className="flex flex-col gap-0.5">
           <h2 className="text-lg font-semibold text-foreground">{user.name}</h2>
           <p className="text-sm text-muted-foreground">{user.email}</p>
-          <p className="font-mono text-xs text-muted-foreground">
+          {/* <p className="font-mono text-xs text-muted-foreground">
             ID: {user.public_id}
-          </p>
+          </p> */}
         </div>
       </div>
 
