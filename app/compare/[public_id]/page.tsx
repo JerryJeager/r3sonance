@@ -15,6 +15,7 @@ import {
   BASE_URL,
   compatibility_result,
   CompatibilityResult,
+  UserProfile,
 } from "@/lib/types";
 import { useParams, useSearchParams } from "next/navigation";
 
@@ -28,6 +29,7 @@ export default function ComparePage() {
   const [compatibilityResult, setCompatibilityResult] =
     useState<compatibility_result>();
   const [error, setError] = useState("");
+  const [user, setUser] = useState<UserProfile>();
 
   useEffect(() => {
     const getCompatibilityData = async () => {
@@ -36,15 +38,21 @@ export default function ComparePage() {
       try {
         const accessToken = await getCookie("r3sonance_token");
 
-        const compatibility = await axios.get(
-          `${BASE_URL()}/users/compatibility/${publicID ? publicID : "r3c"}`,
-          {
+        const [user, compatibility] = await Promise.all([
+          axios.get(`${BASE_URL()}/users/profile`, {
             headers: { Authorization: `Bearer ${accessToken?.value}` },
-          },
-        );
+          }),
+          axios.get(
+            `${BASE_URL()}/users/compatibility/${publicID ? publicID : "r3c"}`,
+            {
+              headers: { Authorization: `Bearer ${accessToken?.value}` },
+            },
+          ),
+        ]);
 
         setCompatibilityData(compatibility.data);
         setCompatibilityResult(compatibility.data.compatibility_result);
+        setUser(user.data);
       } catch (e) {
         setError("Oops! Something went wrong");
       } finally {
@@ -75,7 +83,7 @@ export default function ComparePage() {
           </div>
         </div>
       )}
-      {!isLoading && compatibilityData && compatibilityResult && (
+      {!isLoading && compatibilityData && compatibilityResult && user && (
         <main className="min-h-screen bg-background">
           <div className="mx-auto flex max-w-4xl flex-col gap-10 px-4 py-10">
             {/* Header */}
@@ -121,7 +129,7 @@ export default function ComparePage() {
             {/* Listening Insights */}
             <ListeningInsights
               insights={compatibilityResult.listening_insights}
-              nameA={currentUser.name}
+              nameA={user.name}
               nameB={compatibilityData?.compared_with}
             />
           </div>
