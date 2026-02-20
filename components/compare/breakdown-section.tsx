@@ -100,7 +100,7 @@ export function BreakdownSection({ breakdown }: BreakdownSectionProps) {
                   className="font-mono text-sm font-semibold"
                   style={{ color: barColor }}
                 >
-                  {item.value}
+                  {item.value == 0 ? item.value : item.value.toFixed(1)}
                 </span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">

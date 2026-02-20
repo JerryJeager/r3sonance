@@ -11,7 +11,7 @@ interface ProfileCardProps {
 
 export function ProfileCard({ user }: ProfileCardProps) {
   const [copied, setCopied] = useState(false)
-  const shareLink = `https://r3sonance.app/compare/${user.public_id}`
+  const shareLink = `https://r3sonance.vercel.app/compare/${user.public_id}`
 
   function handleCopy() {
     navigator.clipboard.writeText(shareLink)
