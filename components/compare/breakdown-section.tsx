@@ -9,12 +9,6 @@ import {
 } from "@/components/ui/tooltip"
 import { Info } from "lucide-react"
 
-interface BreakdownItem {
-  label: string
-  value: number
-  tooltip: string
-}
-
 interface BreakdownSectionProps {
   breakdown: {
     artist_overlap_score: number
@@ -25,84 +19,112 @@ interface BreakdownSectionProps {
   }
 }
 
-const breakdownConfig: { key: string; label: string; tooltip: string }[] = [
+const breakdownConfig: {
+  key: keyof BreakdownSectionProps["breakdown"]
+  label: string
+  tooltip: string
+  weight: number
+}[] = [
   {
     key: "artist_overlap_score",
     label: "Artist Overlap",
-    tooltip: "How many of your top artists are shared between both profiles.",
+    tooltip:
+      "How many of your top artists are shared between both profiles.",
+    weight: 35,
   },
   {
     key: "track_overlap_score",
     label: "Track Overlap",
-    tooltip: "How many of your top tracks appear in both listening histories.",
+    tooltip:
+      "How many of your top tracks appear in both listening histories.",
+    weight: 25,
   },
   {
     key: "rank_alignment_score",
     label: "Rank Alignment",
-    tooltip: "How closely your shared artists are ranked in both profiles.",
+    tooltip:
+      "How closely your shared artists are ranked in both profiles.",
+    weight: 15,
   },
   {
     key: "active_hour_score",
     label: "Listening Rhythm",
-    tooltip: "How well your peak listening hours align throughout the day.",
+    tooltip:
+      "How well your peak listening hours align throughout the day.",
+    weight: 12,
   },
   {
     key: "diversity_score",
     label: "Diversity",
-    tooltip: "How similar your genre diversity and exploration patterns are.",
+    tooltip:
+      "How similar your genre diversity and exploration patterns are.",
+    weight: 10,
   },
 ]
 
-function getBarColor(value: number) {
-  if (value <= 30) return "#ff4444"
-  if (value <= 60) return "#ffbb33"
+function getBarColor(percentage: number) {
+  if (percentage <= 30) return "#ff4444"
+  if (percentage <= 60) return "#ffbb33"
   return "#00e676"
 }
 
 export function BreakdownSection({ breakdown }: BreakdownSectionProps) {
-  const items: BreakdownItem[] = breakdownConfig.map((config) => ({
-    label: config.label,
-    value: breakdown[config.key as keyof typeof breakdown],
-    tooltip: config.tooltip,
-  }))
-
   return (
     <SectionWrapper title="Score Breakdown" delay={0.3}>
       <div className="flex flex-col gap-5 rounded-xl border border-[var(--glass-border)] bg-[var(--glass)] p-6 backdrop-blur-md">
-        {items.map((item, i) => {
-          const barColor = getBarColor(item.value)
+        {breakdownConfig.map((config, i) => {
+          const value = breakdown[config.key] ?? 0
+
+          // 🔥 THIS IS WHERE Math.min GOES
+          const percentage = Math.min(
+            (value / config.weight) * 100,
+            100
+          )
+
+          const barColor = getBarColor(percentage)
+
           return (
             <motion.div
-              key={item.label}
+              key={config.label}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 + i * 0.1 }}
               className="flex flex-col gap-2"
             >
+              {/* Label + Value */}
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-foreground">
-                    {item.label}
+                    {config.label}
                   </span>
+
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button className="text-muted-foreground transition-colors hover:text-foreground">
                         <Info className="h-3.5 w-3.5" />
-                        <span className="sr-only">More info about {item.label}</span>
+                        <span className="sr-only">
+                          More info about {config.label}
+                        </span>
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>{item.tooltip}</p>
+                      <p>{config.tooltip}</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
+
                 <span
                   className="font-mono text-sm font-semibold"
                   style={{ color: barColor }}
                 >
-                  {item.value == 0 ? item.value : item.value.toFixed(1)}
+                  {value.toFixed(1)} / {config.weight}
+                  <span className="ml-2 text-xs text-muted-foreground">
+                    ({percentage.toFixed(0)}%)
+                  </span>
                 </span>
               </div>
+
+              {/* Progress Bar */}
               <div className="h-2 w-full overflow-hidden rounded-full bg-[rgba(255,255,255,0.06)]">
                 <motion.div
                   className="h-full rounded-full"
@@ -111,8 +133,12 @@ export function BreakdownSection({ breakdown }: BreakdownSectionProps) {
                     boxShadow: `0 0 8px ${barColor}66`,
                   }}
                   initial={{ width: 0 }}
-                  animate={{ width: `${item.value}%` }}
-                  transition={{ duration: 1, delay: 0.5 + i * 0.1, ease: "easeOut" }}
+                  animate={{ width: `${percentage}%` }}
+                  transition={{
+                    duration: 1,
+                    delay: 0.5 + i * 0.1,
+                    ease: "easeOut",
+                  }}
                 />
               </div>
             </motion.div>

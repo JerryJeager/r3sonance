@@ -5,6 +5,7 @@ import { HowItWorks } from "@/components/landing/how-it-works";
 import { Features } from "@/components/landing/features";
 import { Footer } from "@/components/landing/footer";
 import { storeCookie } from "@/actions/handleCookies";
+import { setCookie as setClientCookie } from "@/actions/clientCookie";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -18,7 +19,10 @@ export default function LandingPage() {
         const token = params.get("token");
 
         if (token) {
-          storeCookie("r3sonance_token", token);
+          setClientCookie("r3sonance_token", token, {
+            maxAge: 3600,
+            path: "/",
+          });
 
           router.replace("/dashboard");
         }
